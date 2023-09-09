@@ -83,6 +83,7 @@ namespace Banca_del_Tempo
                 Console.WriteLine("2-Rimuovi Socio");
                 Console.WriteLine("3-Visualizza tutti i Soci");
                 Console.WriteLine("4-Effetua scambio di prestazioni");
+                Console.WriteLine("5-Visualizza soci che fanno parte della segreteria");
                 Console.WriteLine("9-pulisci console");
                 c = int.Parse(Console.ReadLine());
                 Console.WriteLine();
@@ -150,6 +151,15 @@ namespace Banca_del_Tempo
                         }
                         Scambio(ero, ric,ore);
                         Console.WriteLine("Scambio effettuato");
+                        Console.WriteLine();
+                        break;
+
+                    case 5:
+                        for (int i = 0; i < BdT.Count; i++)
+                        {
+                            if ( BdT[i].Segreteria == true )
+                                Console.WriteLine( BdT[i].ToString() );
+                        }
                         Console.WriteLine();
                         break;
 
