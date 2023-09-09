@@ -15,9 +15,11 @@ namespace Banca_del_Tempo
         public string Telefono { get; set; }
         public bool Segreteria { get; set; }
 
-        public int Tempo { get; set; }
+        public int TempoTotale { get; set; } //indica il tempo totale indipendentemente se lo usi
+                                             //per comprare altri servizi o no
+        public int TempoComprato { get; set; } //indica il tempo che compri per altri servizi
 
-        public int TempoComprato { get; set; }
+        public int TempoValuta { get; set; } //valuta che si usa per "comprare" altri servizi
         private Prestazione p;
 
         public Socio()
@@ -30,8 +32,9 @@ namespace Banca_del_Tempo
             Cognome = c;
             Telefono = t;
             Segreteria = s;
-            Tempo = 0;
+            TempoTotale = 0;
             TempoComprato = 0;
+            TempoValuta = 0;
         }
         public string GetPrestazioneString()
         {
@@ -47,7 +50,7 @@ namespace Banca_del_Tempo
         }
         public override string ToString()
         {
-            return $"{Id} {Nome} {Cognome} {Telefono} {Segreteria} {Tempo} {TempoComprato} ";
+            return $"{Id} {Nome} {Cognome} {Telefono} {Segreteria} {TempoTotale} {TempoComprato} {TempoValuta} ";
         }
             
     }

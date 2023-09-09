@@ -66,8 +66,8 @@ namespace Banca_del_Tempo
         {
             Prestazione PresErogatore;
             PresErogatore = e.GetPrestazione();
-            r.Tempo -= h;
-            e.Tempo+= h;
+            r.TempoValuta -= h;
+            e.TempoTotale += h;
             PresErogatore.Ore += h;
             PresErogatore.Data = DateTime.Now;
             r.TempoComprato += h;
@@ -86,7 +86,8 @@ namespace Banca_del_Tempo
                 Console.WriteLine("4-Effetua scambio di prestazioni");
                 Console.WriteLine("5-Visualizza soci che fanno parte della segreteria");
                 Console.WriteLine("6-Visualizza soci con debito");
-                Console.WriteLine("9-pulisci console");
+                Console.WriteLine("7-Visualizza in ordine decrescente i soci in base alle ore erogate");
+                Console.WriteLine("8-pulisci console");
                 c = int.Parse(Console.ReadLine());
                 Console.WriteLine();
                 switch (c)
@@ -168,18 +169,26 @@ namespace Banca_del_Tempo
                     case 6:
                         for (int i = 0; i < BdT.Count; i++)
                         {
-                            if (BdT[i].TempoComprato > BdT[i].Tempo)
+                            if (BdT[i].TempoComprato > BdT[i].TempoTotale)
                                 Console.WriteLine(BdT[i].ToString());
                         }
                         Console.WriteLine();
                         break;
 
-                    case 9:
+                    case 7:
+                        List<Socio> temp = BdT.OrderByDescending(x => x.TempoTotale).ToList();
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            Console.WriteLine($"nome prestazione:{temp[i].GetPrestazione().Nome} ore totali erogate:{temp[i].TempoTotale}"); 
+                        }
+                        break;
+
+                    case 8:
                         Console.Clear();
                         break;
 
                 }
-            } while ( c >= 1 && c <= 9 );
+            } while ( c >= 1 && c <= 8 );
         }
     }
 }
