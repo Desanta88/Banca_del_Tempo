@@ -16,6 +16,8 @@ namespace Banca_del_Tempo
         public bool Segreteria { get; set; }
 
         public int Tempo { get; set; }
+
+        public int TempoComprato { get; set; }
         private Prestazione p;
 
         public Socio()
@@ -29,6 +31,7 @@ namespace Banca_del_Tempo
             Telefono = t;
             Segreteria = s;
             Tempo = 0;
+            TempoComprato = 0;
         }
         public string GetPrestazioneString()
         {
@@ -44,7 +47,7 @@ namespace Banca_del_Tempo
         }
         public override string ToString()
         {
-            return $"{Id} {Nome} {Cognome} {Telefono} {Segreteria} {Tempo} ";
+            return $"{Id} {Nome} {Cognome} {Telefono} {Segreteria} {Tempo} {TempoComprato} ";
         }
             
     }

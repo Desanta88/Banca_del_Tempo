@@ -70,6 +70,7 @@ namespace Banca_del_Tempo
             e.Tempo+= h;
             PresErogatore.Ore += h;
             PresErogatore.Data = DateTime.Now;
+            r.TempoComprato += h;
         }
         static void Main(string[] args)
         {
@@ -84,6 +85,7 @@ namespace Banca_del_Tempo
                 Console.WriteLine("3-Visualizza tutti i Soci");
                 Console.WriteLine("4-Effetua scambio di prestazioni");
                 Console.WriteLine("5-Visualizza soci che fanno parte della segreteria");
+                Console.WriteLine("6-Visualizza soci con debito");
                 Console.WriteLine("9-pulisci console");
                 c = int.Parse(Console.ReadLine());
                 Console.WriteLine();
@@ -159,6 +161,15 @@ namespace Banca_del_Tempo
                         {
                             if ( BdT[i].Segreteria == true )
                                 Console.WriteLine( BdT[i].ToString() );
+                        }
+                        Console.WriteLine();
+                        break;
+
+                    case 6:
+                        for (int i = 0; i < BdT.Count; i++)
+                        {
+                            if (BdT[i].TempoComprato > BdT[i].Tempo)
+                                Console.WriteLine(BdT[i].ToString());
                         }
                         Console.WriteLine();
                         break;
