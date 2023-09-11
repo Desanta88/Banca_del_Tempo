@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 namespace Banca_del_Tempo
 {
@@ -28,14 +33,14 @@ namespace Banca_del_Tempo
         }
         static void Aggiungi(List<Socio> l, Socio s, Prestazione p)
         {
-            p.Ricevente = null;
-            p.Erogatore = s;
-            s.SetPrestazione(p);
+            p.RiceventeId=0;
+            s.p = p;
             SetIdAutomatico(s, l);
-            l.Add(s);
+            p.ErogatoreId = s.Id;
+            l.Add(s); 
         }
         static void EliminaSocio(int id, List<Socio> l)
-        {
+        {    
             for ( int i = 0; i < l.Count; i++ )
             {
                 if ( l[i].Id == id )
@@ -64,13 +69,34 @@ namespace Banca_del_Tempo
         }
         static void Scambio(Socio e,Socio r,int h)
         {
-            Prestazione PresErogatore;
-            PresErogatore = e.GetPrestazione();
             r.TempoValuta -= h;
             e.TempoTotale += h;
-            PresErogatore.Ore += h;
-            PresErogatore.Data = DateTime.Now;
+            e.p.Ore += h;
+            e.p.Data = DateTime.Now;
             r.TempoComprato += h;
+        }
+
+        /*static void ScriviFile(Socio s,string f)
+        {
+            string dati = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+            System.IO.File.AppendAllText(f, dati);
+            
+        }*/
+
+        static void Salva(List<Socio>b,string f)
+        {
+            FileStream fs = File.Open(f, FileMode.Open);
+            fs.SetLength(0);
+            fs.Close();
+            System.IO.File.AppendAllText(f, "[");
+            for (int i = 0; i < b.Count; i++)
+            {
+                string dati = Newtonsoft.Json.JsonConvert.SerializeObject(b[i]);
+                System.IO.File.AppendAllText(f,dati);
+                if(i<b.Count-1)
+                    System.IO.File.AppendAllText(f, ",");
+            }
+            System.IO.File.AppendAllText(f, "]");
         }
         static void Main(string[] args)
         {
@@ -78,6 +104,30 @@ namespace Banca_del_Tempo
             Socio soc;
             Prestazione pre;
             int c = 1;
+            string filename = @"./Soci.json";
+            try
+            {
+                StreamReader sr = new StreamReader(filename);
+                string jsonData = sr.ReadToEnd();
+                sr.Close();
+                FileStream fstream = File.Open(filename, FileMode.Open);
+                if (System.IO.File.Exists(filename) == true)
+                {
+                    if (fstream.Length != 0)
+                    {
+                        BdT = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Socio>>(jsonData);
+                        fstream.Close();
+                    }
+                }
+            }catch(FileNotFoundException e)
+            {
+                Console.WriteLine("File non trovato,ne verrà creato uno nuovo");
+                Console.WriteLine();
+                var fst=File.Create(e.FileName);
+                fst.Close();
+             
+            }
+
             do
             {
                 Console.WriteLine("1-Aggiungi Socio");
@@ -90,6 +140,7 @@ namespace Banca_del_Tempo
                 Console.WriteLine("8-pulisci console");
                 c = int.Parse(Console.ReadLine());
                 Console.WriteLine();
+
                 switch (c)
                 {
                     case 1:
@@ -107,6 +158,7 @@ namespace Banca_del_Tempo
                         Console.WriteLine("inserisci il nome della prestazione");
                         pre.Nome= Console.ReadLine().ToString();
                         Aggiungi(BdT, soc, pre);
+                        Salva(BdT,filename);
                         Console.WriteLine();
                         break;
 
@@ -114,12 +166,15 @@ namespace Banca_del_Tempo
                         int ide = 0;
                         Console.WriteLine("Inserisci l'id del socio da eliminare");
                         ide = int.Parse(Console.ReadLine());
-                        if ( ide.ToString().Length > 8 )
-                            Console.WriteLine("L'ID è di 8 cifre!!!");
-                        else
+                        if ( ide.ToString().Length == 8)
+                        {
                             EliminaSocio(ide, BdT);
+                            Salva(BdT, filename);
                             Console.WriteLine("Eliminazione effettuata");
                             Console.WriteLine();
+                        }
+                        else
+                            Console.WriteLine("L'ID è di 8 cifre!!!");
                         break;
 
                     case 3:
@@ -179,7 +234,7 @@ namespace Banca_del_Tempo
                         List<Socio> temp = BdT.OrderByDescending(x => x.TempoTotale).ToList();
                         for (int i = 0; i < temp.Count; i++)
                         {
-                            Console.WriteLine($"nome prestazione:{temp[i].GetPrestazione().Nome} ore totali erogate:{temp[i].TempoTotale}"); 
+                            Console.WriteLine($"nome prestazione:{temp[i].p.Nome} ore totali erogate:{temp[i].TempoTotale}"); 
                         }
                         break;
 

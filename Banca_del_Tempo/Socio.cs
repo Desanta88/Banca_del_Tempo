@@ -20,11 +20,11 @@ namespace Banca_del_Tempo
         public int TempoComprato { get; set; } //indica il tempo che compri per altri servizi
 
         public int TempoValuta { get; set; } //valuta che si usa per "comprare" altri servizi
-        private Prestazione p;
+        public  Prestazione p { get; set; }
 
         public Socio()
         {
-
+ 
         }
         public Socio(string n, string c, string t, bool s)
         {
@@ -35,18 +35,6 @@ namespace Banca_del_Tempo
             TempoTotale = 0;
             TempoComprato = 0;
             TempoValuta = 0;
-        }
-        public string GetPrestazioneString()
-        {
-            return p.ToString();
-        }
-        public Prestazione GetPrestazione()
-        {
-            return this.p;
-        }
-        public void SetPrestazione(Prestazione pr)
-        {
-            p = pr;
         }
         public override string ToString()
         {
