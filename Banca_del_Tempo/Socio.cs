@@ -12,7 +12,7 @@ namespace Banca_del_Tempo
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Cognome { get; set; }
-        public string Telefono { get; set; }
+        public int Telefono { get; set; }
         public bool Segreteria { get; set; }
 
         public int TempoTotale { get; set; } //indica il tempo totale indipendentemente se lo usi
@@ -26,7 +26,7 @@ namespace Banca_del_Tempo
         {
  
         }
-        public Socio(string n, string c, string t, bool s)
+        public Socio(string n, string c, int t, bool s)
         {
             Nome = n;
             Cognome = c;
@@ -38,7 +38,7 @@ namespace Banca_del_Tempo
         }
         public override string ToString()
         {
-            return $"{Id} {Nome} {Cognome} {Telefono} {Segreteria} {TempoTotale} {TempoComprato} {TempoValuta} ";
+            return $"{Id} {Nome} {Cognome} {Telefono.ToString()} {Segreteria} {TempoTotale} {TempoComprato} {TempoValuta} ";
         }
             
     }

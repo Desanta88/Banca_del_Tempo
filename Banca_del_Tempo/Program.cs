@@ -151,7 +151,7 @@ namespace Banca_del_Tempo
                         Console.WriteLine("Inserisci il cognome del socio");
                         soc.Cognome = Console.ReadLine().ToString();
                         Console.WriteLine("Inserisci il numero di telefono del socio");
-                        soc.Telefono = Console.ReadLine().ToString();
+                        soc.Telefono = int.Parse( Console.ReadLine() );
                         Console.WriteLine("il nuovo socio farà parte della segreteria? (y/n)");
                         soc.Segreteria = SegreteriaAnswer(Console.ReadLine().ToString());
                         Console.WriteLine("Dati prestazione:");
