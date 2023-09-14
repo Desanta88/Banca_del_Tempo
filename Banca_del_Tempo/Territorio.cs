@@ -10,8 +10,8 @@ namespace Banca_del_Tempo
     {
         public string Nome { get; set; }
 
-        public string TipoTerritorio { get; set; }//dal main poi darò l'opzione di scegliere tra i 3 tipi di territori possibili
-        public List<Zona> Zone { get; set; }
+        public string TipoTerritorio { get; set; }//il tipo di territorio possibile
+        public List<Zona> Zone { get; set; }//le zone del territorio
 
         public Territorio()
         {

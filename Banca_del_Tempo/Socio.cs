@@ -15,31 +15,30 @@ namespace Banca_del_Tempo
         public int Telefono { get; set; }
         public bool Segreteria { get; set; }
 
-        public int TempoTotale { get; set; } //indica il tempo totale indipendentemente se lo usi
-                                             //per comprare altri servizi o no
-        public int TempoComprato { get; set; } //indica il tempo che compri per altri servizi
+        public int TempoTotale { get; set; } //indica il tempo che hai in totale(sia dai guadagni,sia dalle perdite)
+                                             
+        public  Prestazione Prestazione { get; set; }
 
-        public int TempoValuta { get; set; } //valuta che si usa per "comprare" altri servizi
-        public  Prestazione p { get; set; }
+        public Zona Zona { get; set; }
 
         public Socio()
         {
  
         }
-        public Socio(string n, string c, int t, bool s)
+        public Socio(string n, string c, int t, bool s, Zona z)
         {
             Nome = n;
             Cognome = c;
             Telefono = t;
             Segreteria = s;
             TempoTotale = 0;
-            TempoComprato = 0;
-            TempoValuta = 0;
+            Zona = z;
         }
         public override string ToString()
         {
-            return $"{Id} {Nome} {Cognome} {Telefono.ToString()} {Segreteria} {TempoTotale} {TempoComprato} {TempoValuta} ";
+            return $"{Id} {Nome} {Cognome} {Telefono.ToString()} {Segreteria} {TempoTotale} ";
         }
+
             
     }
 }
