@@ -76,14 +76,18 @@ namespace Banca_del_Tempo
             r.TempoComprato += h;
         }
 
-        /*static void ScriviFile(Socio s,string f)
+        static void Salva(BancaDelTempo b,string f)
         {
-            string dati = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+            FileStream fstr = File.Open(f, FileMode.Open);
+            if (fstr.Length > 0)
+                fstr.SetLength(0);
+            string dati = Newtonsoft.Json.JsonConvert.SerializeObject(b);
+            fstr.Close();
             System.IO.File.AppendAllText(f, dati);
-            
-        }*/
 
-        static void Salva(List<Socio>b,string f)
+        }
+
+        /*static void Salva(List<Socio>b,string f)
         {
             FileStream fs = File.Open(f, FileMode.Open);
             fs.SetLength(0);
@@ -97,14 +101,23 @@ namespace Banca_del_Tempo
                     System.IO.File.AppendAllText(f, ",");
             }
             System.IO.File.AppendAllText(f, "]");
+        }*/
+
+        static bool zonaTrovata(List<Zona> z,Zona zz)
+        {
+            for (int i = 0; i < z.Count; i++)
+                if (zz.Nome == z[i].Nome)
+                    return true;
+
+            return false;
         }
         static void Main(string[] args)
         {
-            List<Socio> BdT = new List<Socio>();
+            BancaDelTempo BdT = new BancaDelTempo();
             Socio soc;
             Prestazione pre;
-            int c = 1;
-            string filename = @"./Soci.json";
+            int c = 1,ct=0;
+            string filename = @"./Soci.json",nomeTerri="",nomeZona="";
             try
             {
                 StreamReader sr = new StreamReader(filename);
@@ -115,9 +128,9 @@ namespace Banca_del_Tempo
                 {
                     if (fstream.Length != 0)
                     {
-                        BdT = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Socio>>(jsonData);
-                        fstream.Close();
+                        BdT = Newtonsoft.Json.JsonConvert.DeserializeObject<BancaDelTempo>(jsonData);
                     }
+                    fstream.Close();
                 }
             }catch(FileNotFoundException e)
             {
@@ -126,6 +139,46 @@ namespace Banca_del_Tempo
                 var fst=File.Create(e.FileName);
                 fst.Close();
              
+            }
+            FileStream ff = File.Open(filename, FileMode.Open);
+            if (ff.Length == 0)
+            {
+                Console.WriteLine("Impostare le informazioni della banca del tempo");
+                Console.Write("inserisci il nome della banca del tempo:");
+                BdT.Nome = Console.ReadLine();
+                Console.WriteLine("Scegli il tipo di territorio:");
+                Console.WriteLine("1-Comune");
+                Console.WriteLine("2-Quartiere");
+                Console.WriteLine("3-Città");
+                ct = int.Parse(Console.ReadLine());
+
+                switch (ct)
+                {
+                    case 1:
+                        BdT.Territorio.TipoTerritorio = "Comune";
+                        Console.Write("indica il nome del comune:");
+                        nomeTerri = Console.ReadLine().ToString();
+                        BdT.Territorio.Nome = nomeTerri;
+                        break;
+
+                    case 2:
+                        BdT.Territorio.TipoTerritorio = "Quartiere";
+                        Console.Write("indica il nome del quartiere:");
+                        nomeTerri = Console.ReadLine().ToString();
+                        BdT.Territorio.Nome = nomeTerri;
+                        break;
+
+                    case 3:
+                        BdT.Territorio.TipoTerritorio = "Città";
+                        Console.Write("indica il nome della città:");
+                        nomeTerri = Console.ReadLine().ToString();
+                        BdT.Territorio.Nome = nomeTerri;
+                        break;
+
+                    default:
+                        break;
+                }
+                ff.Close();
             }
 
             do
@@ -137,13 +190,16 @@ namespace Banca_del_Tempo
                 Console.WriteLine("5-Visualizza soci che fanno parte della segreteria");
                 Console.WriteLine("6-Visualizza soci con debito");
                 Console.WriteLine("7-Visualizza in ordine decrescente i soci in base alle ore erogate");
-                Console.WriteLine("8-pulisci console");
+                Console.WriteLine("8-modifica le informazioni della banca del tempo");
+                Console.WriteLine("9-aggiungi una zona");
+                Console.WriteLine("10-pulisci console");
                 c = int.Parse(Console.ReadLine());
                 Console.WriteLine();
 
                 switch (c)
                 {
                     case 1:
+                        Zona zone = new Zona();
                         Console.WriteLine("Inserisci il nome del socio");
                         soc = new Socio();
                         pre = new Prestazione();
@@ -157,8 +213,17 @@ namespace Banca_del_Tempo
                         Console.WriteLine("Dati prestazione:");
                         Console.WriteLine("inserisci il nome della prestazione");
                         pre.Nome= Console.ReadLine().ToString();
-                        Aggiungi(BdT, soc, pre);
-                        Salva(BdT,filename);
+                        Console.WriteLine("inserisci il nome della zona");
+                        nomeZona = Console.ReadLine();
+                        zone.Nome = nomeZona;
+                        if (zonaTrovata(BdT.Territorio.Zone,zone) == true)
+                        {
+                            Aggiungi(BdT.Soci, soc, pre);
+                            Salva(BdT, filename);
+                        }
+                        else
+                           Console.WriteLine("Non hai aggiunto zone");
+                        
                         Console.WriteLine();
                         break;
 
@@ -168,7 +233,7 @@ namespace Banca_del_Tempo
                         ide = int.Parse(Console.ReadLine());
                         if ( ide.ToString().Length == 8)
                         {
-                            EliminaSocio(ide, BdT);
+                            EliminaSocio(ide, BdT.Soci);
                             Salva(BdT, filename);
                             Console.WriteLine("Eliminazione effettuata");
                             Console.WriteLine();
@@ -178,8 +243,8 @@ namespace Banca_del_Tempo
                         break;
 
                     case 3:
-                        for( int i = 0; i < BdT.Count; i++ )
-                            Console.WriteLine( BdT[i].ToString() );
+                        for( int i = 0; i < BdT.Soci.Count; i++ )
+                            Console.WriteLine( BdT.Soci[i].ToString() );
                         Console.WriteLine();
                         break;
 
@@ -189,7 +254,7 @@ namespace Banca_del_Tempo
 
                         Console.Write("inserire l'id dell'erogatore:");
                         ide1 = int.Parse( Console.ReadLine() );
-                        ero = TrovaSocio(ide1, BdT);
+                        ero = TrovaSocio(ide1, BdT.Soci);
                         if ( ero == null )
                         {
                             Console.WriteLine("Id dell'erogatore errato");
@@ -200,7 +265,7 @@ namespace Banca_del_Tempo
                         ore=int.Parse( Console.ReadLine() );
                         Console.Write("inserire l'id del ricevente:");
                         ide2=int.Parse( Console.ReadLine() );
-                        ric = TrovaSocio(ide2, BdT);
+                        ric = TrovaSocio(ide2, BdT.Soci);
                         if ( ric == null )
                         {
                             Console.WriteLine("Id del ricevente errato");
@@ -208,30 +273,31 @@ namespace Banca_del_Tempo
                             break;
                         }
                         Scambio(ero, ric,ore);
+                        Salva(BdT, filename);
                         Console.WriteLine("Scambio effettuato");
                         Console.WriteLine();
                         break;
 
                     case 5:
-                        for (int i = 0; i < BdT.Count; i++)
+                        for (int i = 0; i < BdT.Soci.Count; i++)
                         {
-                            if ( BdT[i].Segreteria == true )
-                                Console.WriteLine( BdT[i].ToString() );
+                            if ( BdT.Soci[i].Segreteria == true )
+                                Console.WriteLine( BdT.Soci[i].ToString() );
                         }
                         Console.WriteLine();
                         break;
 
                     case 6:
-                        for (int i = 0; i < BdT.Count; i++)
+                        for (int i = 0; i < BdT.Soci.Count; i++)
                         {
-                            if (BdT[i].TempoComprato > BdT[i].TempoTotale)
-                                Console.WriteLine(BdT[i].ToString());
+                            if (BdT.Soci[i].TempoComprato > BdT.Soci[i].TempoTotale)
+                                Console.WriteLine(BdT.Soci[i].ToString());
                         }
                         Console.WriteLine();
                         break;
 
                     case 7:
-                        List<Socio> temp = BdT.OrderByDescending(x => x.TempoTotale).ToList();
+                        List<Socio> temp = BdT.Soci.OrderByDescending(x => x.TempoTotale).ToList();
                         for (int i = 0; i < temp.Count; i++)
                         {
                             Console.WriteLine($"nome prestazione:{temp[i].p.Nome} ore totali erogate:{temp[i].TempoTotale}"); 
@@ -239,11 +305,60 @@ namespace Banca_del_Tempo
                         break;
 
                     case 8:
+                        Console.Write("inserisci il nome della banca del tempo:");
+                        BdT.Nome = Console.ReadLine();
+                        Console.WriteLine("Scegli il tipo di territorio:");
+                        Console.WriteLine("1-Comune");
+                        Console.WriteLine("2-Quartiere");
+                        Console.WriteLine("3-Città");
+                        ct = int.Parse(Console.ReadLine());
+                        switch (ct)
+                        {
+                            case 1:
+                                BdT.Territorio.TipoTerritorio = "Comune";
+                                Console.Write("indica il nome del comune:");
+                                nomeTerri = Console.ReadLine();
+                                BdT.Territorio.Nome = nomeTerri;
+                                break;
+
+                            case 2:
+                                BdT.Territorio.TipoTerritorio = "Quartiere";
+                                Console.Write("indica il nome del quartiere:");
+                                nomeTerri = Console.ReadLine();
+                                BdT.Territorio.Nome = nomeTerri;
+                                break;
+
+                            case 3:
+                                BdT.Territorio.TipoTerritorio = "Città";
+                                Console.Write("indica il nome della città:");
+                                nomeTerri = Console.ReadLine();
+                                BdT.Territorio.Nome = nomeTerri;
+                                break;
+
+                            default:
+                                break;
+                        }
+                        Salva(BdT, filename);
+                        break;
+
+
+                    case 9:
+                        Zona z = new Zona();
+                        Console.WriteLine("inserisci il nome della zona:");
+                        z.Nome = Console.ReadLine();
+                        if ((zonaTrovata(BdT.Territorio.Zone, z) == false && BdT.Territorio.Zone.Count > 0) || BdT.Territorio.Zone.Count==0)
+                            BdT.Territorio.Zone.Add(z);
+                        else
+                            Console.WriteLine("Zona già presente,creane un'altra");
+                        Salva(BdT, filename);
+                        break;
+
+                    case 10:
                         Console.Clear();
                         break;
 
                 }
-            } while ( c >= 1 && c <= 8 );
+            } while ( c >= 1 && c <= 10 );
         }
     }
 }
