@@ -202,6 +202,7 @@ namespace Banca_del_Tempo
                         if ( ide.ToString().Length == 8)
                         {
                             BdT.EliminaSocio(ide, BdT.Soci);
+                            BdT.Territorio.EliminaAbitante(ide, BdT.Territorio.Zone);
                             Salva(BdT, filename);
                             Console.WriteLine("Eliminazione effettuata");
                             Console.WriteLine();
