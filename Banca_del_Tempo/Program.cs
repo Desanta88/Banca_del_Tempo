@@ -205,6 +205,7 @@ namespace Banca_del_Tempo
                 }
             }
             ff.Close();
+            Salva(BdT, filename);
 
             //menù a scelta della banca
             do
