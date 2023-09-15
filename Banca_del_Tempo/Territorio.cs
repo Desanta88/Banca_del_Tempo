@@ -26,5 +26,14 @@ namespace Banca_del_Tempo
             TipoTerritorio = tipoTerritorio;
             Zone = zone;
         }
+        public int zonaTrovata(List<Zona> z, Zona zz)//verifica se la zona esiste g
+        {
+            for (int i = 0; i < z.Count; i++)
+                if (zz.Nome == z[i].Nome)
+                    return i;
+
+            return -1;
+        }
+       
     }
 }

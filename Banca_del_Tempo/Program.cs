@@ -14,69 +14,6 @@ namespace Banca_del_Tempo
     internal class Program
     {
 
-        static int VerificaId(int id, List<Socio> b)//verifica che l'id sia diverso dagli altri
-        {
-            Random r = new Random();
-            id = r.Next(10000000, 99999999);
-            for ( int i = 0; i < b.Count; i++ )
-            {
-                if ( id == b[i].Id )
-                    id = r.Next(10000000, 99999999);
-            }
-            return id;
-        }
-        static void SetIdAutomatico(Socio s, List<Socio> b)//imposta un id automaticamente
-        {
-            int id = 0;
-            id = VerificaId(id, b);
-            s.Id = id;
-        }
-        static void Aggiungi(List<Socio> l, Socio s, Prestazione p)//aggiunge un socio alla banca
-        {
-            p.RiceventeId=0;
-            s.Prestazione = p;
-            SetIdAutomatico(s, l);
-            p.ErogatoreId = s.Id;
-            l.Add(s); 
-        }
-        static void EliminaSocio(int id, List<Socio> l)//elimina un socio dalla banca
-        {    
-            for ( int i = 0; i < l.Count; i++ )
-            {
-                if ( l[i].Id == id )
-                    l.RemoveAt(i);
-            }
-        }
-        static bool SegreteriaAnswer(string r)//funzione per impostare la risposta riguardo se il socio
-        {                                     //faccia parte della segreteria o no
-            bool a;
-            if ( r == "y" || r == "Y" )
-                r = "true";
-            else
-                r = "false";
-            a = bool.Parse(r);
-            return a;
-        }
-        static Socio TrovaSocio(int id, List<Socio> l)//trova il socio nella banca
-        {
-            Socio temp = null;
-            for ( int i = 0; i < l.Count; i++ )
-            {
-                if ( l[i].Id == id )
-                    temp = l[i];
-            }
-            return temp;
-        }
-        static void Scambio(Socio e,Socio r,int h)//effettua lo scambio di tempo tra due soci
-        {
-            e.TempoTotale += h;
-            e.Prestazione.OreTotali += h;
-            e.Prestazione.Data = DateTime.Now;
-            r.TempoTotale -= h;
-            e.Prestazione.OreImpiegate = h;
-            e.Prestazione.RiceventeId = r.Id;
-        }
-
         static void Salva(BancaDelTempo b,string f)//salva le informazioni della banca su un file
         {
             FileStream fstr = File.Open(f, FileMode.Open);
@@ -104,14 +41,6 @@ namespace Banca_del_Tempo
             System.IO.File.AppendAllText(f, "]");
         }
 
-        static int zonaTrovata(List<Zona> z,Zona zz)//verifica se la zona esiste già
-        {
-            for (int i = 0; i < z.Count; i++)
-                if (zz.Nome == z[i].Nome)
-                    return i;
-
-            return -1;
-        }
         static void Main(string[] args)
         {
             BancaDelTempo BdT = new BancaDelTempo();
@@ -246,17 +175,17 @@ namespace Banca_del_Tempo
                             break;
                         }
                         Console.WriteLine("il nuovo socio farà parte della segreteria? (y/n)");
-                        soc.Segreteria = SegreteriaAnswer(Console.ReadLine().ToString());
+                        soc.Segreteria = BdT.SegreteriaAnswer(Console.ReadLine().ToString());
                         Console.WriteLine("Dati prestazione:");
                         Console.WriteLine("inserisci il nome della prestazione");
                         pre.Nome= Console.ReadLine().ToString();
                         Console.WriteLine("inserisci il nome della zona");
                         nomeZona = Console.ReadLine();
                         zone.Nome = nomeZona;
-                        zonaTro = zonaTrovata(BdT.Territorio.Zone, zone);
-                        if (zonaTrovata(BdT.Territorio.Zone,zone) !=-1)
+                        zonaTro = BdT.Territorio.zonaTrovata(BdT.Territorio.Zone, zone);
+                        if (BdT.Territorio.zonaTrovata(BdT.Territorio.Zone,zone) !=-1)
                         {
-                            Aggiungi(BdT.Soci, soc, pre);
+                            BdT.Aggiungi(BdT.Soci, soc, pre);
                             BdT.Territorio.Zone[zonaTro].Abitanti.Add(soc);
                             Salva(BdT, filename);
                         }
@@ -272,7 +201,7 @@ namespace Banca_del_Tempo
                         ide = int.Parse(Console.ReadLine());
                         if ( ide.ToString().Length == 8)
                         {
-                            EliminaSocio(ide, BdT.Soci);
+                            BdT.EliminaSocio(ide, BdT.Soci);
                             Salva(BdT, filename);
                             Console.WriteLine("Eliminazione effettuata");
                             Console.WriteLine();
@@ -305,7 +234,7 @@ namespace Banca_del_Tempo
 
                         Console.Write("inserire l'id dell'erogatore:");
                         ide1 = int.Parse( Console.ReadLine() );
-                        ero = TrovaSocio(ide1, BdT.Soci);
+                        ero = BdT.TrovaSocio(ide1, BdT.Soci);
                         if ( ero == null )
                         {
                             Console.WriteLine("Id dell'erogatore errato");
@@ -316,14 +245,14 @@ namespace Banca_del_Tempo
                         ore=int.Parse( Console.ReadLine() );
                         Console.Write("inserire l'id del ricevente:");
                         ide2=int.Parse( Console.ReadLine() );
-                        ric = TrovaSocio(ide2, BdT.Soci);
+                        ric = BdT.TrovaSocio(ide2, BdT.Soci);
                         if ( ric == null )
                         {
                             Console.WriteLine("Id del ricevente errato");
                             Console.WriteLine();
                             break;
                         }
-                        Scambio(ero, ric,ore);
+                        BdT.Scambio(ero, ric,ore);
                         scambi.Add(ero.Prestazione);
                         Salva(BdT, filename);
                         SalvaLista(scambi, filename2);
@@ -371,8 +300,8 @@ namespace Banca_del_Tempo
                         {
                             if (scambi[i].Data != scambi[i-1].Data)
                                 Console.WriteLine("Data:" + scambi[i].Data);
-                            erogatore = TrovaSocio(scambi[i].ErogatoreId, BdT.Soci);
-                            ricevente = TrovaSocio(scambi[i].RiceventeId, BdT.Soci);
+                            erogatore = BdT.TrovaSocio(scambi[i].ErogatoreId, BdT.Soci);
+                            ricevente = BdT.TrovaSocio(scambi[i].RiceventeId, BdT.Soci);
                             Console.WriteLine($"Erogatore:{erogatore.Nome} {erogatore.Cognome} {erogatore.Id}");
                             Console.WriteLine($"Ricevente:{ricevente.Nome} {ricevente.Cognome} {ricevente.Id}");
                             Console.WriteLine("ore impiegate:" + scambi[i].OreImpiegate);
@@ -424,7 +353,7 @@ namespace Banca_del_Tempo
                         Zona z = new Zona();
                         Console.WriteLine("inserisci il nome della zona:");
                         z.Nome = Console.ReadLine();
-                        if ((zonaTrovata(BdT.Territorio.Zone, z) ==-1  && BdT.Territorio.Zone.Count > 0) || BdT.Territorio.Zone.Count==0)
+                        if ((BdT.Territorio.zonaTrovata(BdT.Territorio.Zone, z) ==-1  && BdT.Territorio.Zone.Count > 0) || BdT.Territorio.Zone.Count==0)
                             BdT.Territorio.Zone.Add(z);
                         else
                             Console.WriteLine("Zona già presente,creane un'altra");
