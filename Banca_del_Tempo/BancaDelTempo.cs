@@ -25,12 +25,13 @@ namespace Banca_del_Tempo
             Territorio = new Territorio();
             Nome = "";
         }
-        public void Aggiungi(List<Socio> l, Socio s, Prestazione p)//aggiunge un socio alla banca
+        public void Aggiungi(List<Socio> l, Socio s, Prestazione p,int  zt)//aggiunge un socio alla banca
         {
             p.RiceventeId = 0;
             s.Prestazione = p;
             SetIdAutomatico(s, l);
             p.ErogatoreId = s.Id;
+            s.Zona = this.Territorio.Zone[zt].Nome;
             l.Add(s);
         }
         private void SetIdAutomatico(Socio s, List<Socio> b)//imposta un id automaticamente

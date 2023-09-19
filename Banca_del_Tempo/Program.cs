@@ -30,15 +30,8 @@ namespace Banca_del_Tempo
             FileStream fs = File.Open(f, FileMode.Open);
             fs.SetLength(0);
             fs.Close();
-            System.IO.File.AppendAllText(f, "[");
-            for (int i = 0; i < s.Count; i++)
-            {
-                string dati = Newtonsoft.Json.JsonConvert.SerializeObject(s[i]);
-                System.IO.File.AppendAllText(f,dati);
-                if(i<s.Count-1)
-                    System.IO.File.AppendAllText(f, ",");
-            }
-            System.IO.File.AppendAllText(f, "]");
+            string dati = Newtonsoft.Json.JsonConvert.SerializeObject(s);
+            System.IO.File.AppendAllText(f, dati);
         }
 
         static void Main(string[] args)
@@ -136,6 +129,11 @@ namespace Banca_del_Tempo
             ff.Close();
             Salva(BdT, filename);
 
+            Console.ForegroundColor= ConsoleColor.Red;
+            Console.WriteLine("GESTIONALE BANCA DEL TEMPO");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.White;
+
             //menù a scelta della banca
             do
             {
@@ -157,16 +155,33 @@ namespace Banca_del_Tempo
                 switch (c)
                 {
                     case 1:
-                        int numeroTel = 0;
+                        ulong numeroTel = 0;
+                        string nome="",cognome="";
                         Zona zone = new Zona();
                         Console.WriteLine("Inserisci il nome del socio");
                         soc = new Socio();
                         pre = new Prestazione();
-                        soc.Nome = Console.ReadLine().ToString();
+                        nome = Console.ReadLine();
+                        if (nome.Any(char.IsDigit) == true)
+                        {
+                            Console.WriteLine("Un nome non può contenere dei numeri!!!");
+                            Console.WriteLine();
+                            break;
+                        }
+                        soc.Nome = nome;
+                            
                         Console.WriteLine("Inserisci il cognome del socio");
-                        soc.Cognome = Console.ReadLine().ToString();
+                        cognome = Console.ReadLine();
+                        if (cognome.Any(char.IsDigit) == true)
+                        {
+                            Console.WriteLine("Un cognome non può contenere dei numeri!!!");
+                            Console.WriteLine();
+                            break;
+                        }
+                        soc.Cognome = cognome;
+
                         Console.WriteLine("Inserisci il numero di telefono del socio");
-                        numeroTel= int.Parse(Console.ReadLine());
+                        numeroTel= ulong.Parse(Console.ReadLine());
                         if (numeroTel.ToString().Length == 10)
                             soc.Telefono = numeroTel;
                         else
@@ -185,8 +200,9 @@ namespace Banca_del_Tempo
                         zonaTro = BdT.Territorio.zonaTrovata(BdT.Territorio.Zone, zone);
                         if (BdT.Territorio.zonaTrovata(BdT.Territorio.Zone,zone) !=-1)
                         {
-                            BdT.Aggiungi(BdT.Soci, soc, pre);
+                            BdT.Aggiungi(BdT.Soci, soc, pre,zonaTro);
                             BdT.Territorio.Zone[zonaTro].Abitanti.Add(soc);
+
                             Salva(BdT, filename);
                         }
                         else
@@ -352,8 +368,16 @@ namespace Banca_del_Tempo
 
                     case 10:
                         Zona z = new Zona();
+                        string nomeZ="";
                         Console.WriteLine("inserisci il nome della zona:");
-                        z.Nome = Console.ReadLine();
+                        nomeZ = Console.ReadLine();
+                        if (nomeZ.Any(char.IsDigit) == true)
+                        {
+                            Console.WriteLine("il nome di una zona non può contenere dei numeri!!!");
+                            Console.WriteLine();
+                            break;
+                        }
+                        z.Nome = nomeZ;
                         if ((BdT.Territorio.zonaTrovata(BdT.Territorio.Zone, z) ==-1  && BdT.Territorio.Zone.Count > 0) || BdT.Territorio.Zone.Count==0)
                             BdT.Territorio.Zone.Add(z);
                         else
@@ -380,6 +404,10 @@ namespace Banca_del_Tempo
 
                     case 12:
                         Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("GESTIONALE BANCA DEL TEMPO");
+                        Console.WriteLine();
+                        Console.ForegroundColor = ConsoleColor.White;
                         break;
 
                 }

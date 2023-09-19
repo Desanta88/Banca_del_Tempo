@@ -38,7 +38,7 @@ namespace Banca_del_Tempo
         {
             for (int i = 0; i < z.Count; i++)
             {
-                for(int x = 0; i < z[i].Abitanti.Count; x++)
+                for(int x = 0; x < z[i].Abitanti.Count; x++)
                 {
                     if (z[i].Abitanti[x].Id == id)
                         z[i].Abitanti.RemoveAt(x);
